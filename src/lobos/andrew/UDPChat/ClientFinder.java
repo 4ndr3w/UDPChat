@@ -1,3 +1,4 @@
+package lobos.andrew.UDPChat;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -18,6 +19,7 @@ public class ClientFinder extends Thread {
 		try {
 			sock = new DatagramSocket(1218);
 			sock.setBroadcast(true);
+			start();
 		} catch (SocketException e) {
 			System.out.println("Failed to create UDP socket");
 			e.printStackTrace();
@@ -63,8 +65,24 @@ public class ClientFinder extends Thread {
 		sock.close();
 	}
 	
-	public static void main(String[] args) {
-		new ClientFinder();
+	public Vector<InetAddress> getClients()
+	{
+		return clientList;
+	}
+	
+	public static void main(String[] args) throws InterruptedException {
+		ClientFinder f = new ClientFinder();
+		System.out.println("Finding clients...");
+		
+		while ( f.getClients().size() == 0 ) Thread.sleep(100);
+		
+		Vector<InetAddress> clients = f.getClients();
+		Iterator<InetAddress> it = clients.iterator();
+		
+		while ( it.hasNext() )
+		{
+			System.out.println(it.next().getHostAddress());
+		}
 		
 	}
 
