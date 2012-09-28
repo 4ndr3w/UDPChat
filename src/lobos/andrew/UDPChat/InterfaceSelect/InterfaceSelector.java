@@ -19,6 +19,7 @@ public class InterfaceSelector extends JFrame implements ActionListener
 	private static final long serialVersionUID = -84630977659095386L;
 	Vector<JRadioButton> buttonlist = new Vector<JRadioButton>();
 	InterfaceSelectorReceiver callbackHandler = null;
+	
 	public InterfaceSelector(InterfaceSelectorReceiver callbackHandler) throws SocketException
 	{
 		this.callbackHandler = callbackHandler;

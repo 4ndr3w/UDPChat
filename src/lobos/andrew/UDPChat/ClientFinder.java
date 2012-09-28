@@ -4,27 +4,26 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
-import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelector;
 import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelectorReceiver;
 
 
 public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 {
-
 	private MulticastSocket sock;
-	static byte[] probeData = {'b'};
+	static byte[] probeData = null;
 	private Vector<InetAddress> clientList = new Vector<InetAddress>();
 	private InetAddress myAddress;
 	private InetAddress broadcastTarget;
 	ButtonGroup options = new ButtonGroup();
-	public ClientFinder() throws SocketException
+	
+	public ClientFinder(String username, String interfaceName)
 	{
-		new InterfaceSelector(this);
+		probeData = username.getBytes();
+		selectInterface(interfaceName);
 	}
 	
 
@@ -73,7 +72,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 		
 		while ( true )
 		{
-			byte[] buf = new byte[1];
+			byte[] buf = new byte[20];
 			DatagramPacket findBroadcast = new DatagramPacket(buf, buf.length);
 			try {
 				sock.receive(findBroadcast);
@@ -103,17 +102,6 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 				}
 				else
 					System.out.println("Ignored packet from self");
-				
-				Iterator<InetAddress> it = clientList.iterator();
-				
-				System.out.println("Host list:");
-				while ( it.hasNext() )
-				{
-					InetAddress addr = it.next();
-					System.out.println(addr.getHostAddress());
-				}
-				System.out.println("**********");
-				
 				Thread.sleep(500);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -129,10 +117,6 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	public Vector<InetAddress> getClients()
 	{
 		return clientList;
-	}
-	
-	public static void main(String[] args) throws InterruptedException, SocketException {
-		new ClientFinder();
 	}
 
 }
