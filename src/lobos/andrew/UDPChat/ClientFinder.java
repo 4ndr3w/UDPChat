@@ -15,7 +15,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 {
 	private MulticastSocket sock;
 	static byte[] probeData = null;
-	private Vector<InetAddress> clientList = new Vector<InetAddress>();
+	private Vector<DiscoveredClient> clientList = new Vector<DiscoveredClient>();
 	private InetAddress myAddress;
 	private InetAddress broadcastTarget;
 	ButtonGroup options = new ButtonGroup();
@@ -76,17 +76,19 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 			DatagramPacket findBroadcast = new DatagramPacket(buf, buf.length);
 			try {
 				sock.receive(findBroadcast);
+				
+				String username = new String(buf);
 				System.out.println("Got packet");
 				InetAddress recvFrom = findBroadcast.getAddress();
 
 				System.out.println("Address: "+recvFrom.getHostAddress());
 				if ( !recvFrom.equals(myAddress) )
 				{
-					Iterator<InetAddress> it = clientList.iterator();
+					Iterator<DiscoveredClient> it = clientList.iterator();
 					boolean exists = false;
 					while ( it.hasNext() )
 					{
-						InetAddress addr = it.next();
+						InetAddress addr = it.next().getAddress();
 						if ( addr.getHostAddress().equals(recvFrom.getHostAddress()) )
 						{
 							exists = true;
@@ -97,7 +99,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 					if ( !exists )
 					{
 						sendProbe();
-						clientList.add(recvFrom);
+						clientList.add(new DiscoveredClient(username, recvFrom));
 					}
 				}
 				else
@@ -114,7 +116,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 		sock.close();
 	}
 	
-	public Vector<InetAddress> getClients()
+	public Vector<DiscoveredClient> getClients()
 	{
 		return clientList;
 	}
