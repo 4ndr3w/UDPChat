@@ -1,57 +1,118 @@
 package lobos.andrew.UDPChat;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
+import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelector;
+import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelectorReceiver;
 
-public class ClientFinder extends Thread {
 
-	private DatagramSocket sock;
-	byte[] probeData = {'b'};
+public class ClientFinder extends Thread implements InterfaceSelectorReceiver
+{
+
+	private MulticastSocket sock;
+	static byte[] probeData = {'b'};
 	private Vector<InetAddress> clientList = new Vector<InetAddress>();
-	
-	public ClientFinder()
+	private InetAddress myAddress;
+	private InetAddress broadcastTarget;
+	ButtonGroup options = new ButtonGroup();
+	public ClientFinder() throws SocketException
 	{
-		try {
-			sock = new DatagramSocket(1218);
-			sock.setBroadcast(true);
-			start();
-		} catch (SocketException e) {
-			System.out.println("Failed to create UDP socket");
-			e.printStackTrace();
-		}
+		new InterfaceSelector(this);
 	}
+	
+
+	@Override
+	public void selectInterface(String interfaceName) {
+		try {
+			NetworkInterface selected = NetworkInterface.getByName(interfaceName);
+			for ( int i = 0; i <  selected.getInterfaceAddresses().size(); i++ )
+			{
+				InetAddress bcast = selected.getInterfaceAddresses().get(i).getBroadcast();
+				if ( bcast != null )
+				{
+					if ( bcast.getAddress().length == 4 )
+					{
+						broadcastTarget = bcast;
+						myAddress = selected.getInterfaceAddresses().get(i).getAddress();
+					}
+				}
+			}
+			sock = new MulticastSocket(1218);
+			start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
+	}
+
 	
 	public void sendProbe() throws IOException
 	{
-		DatagramPacket findBroadcast = new DatagramPacket(probeData, probeData.length);
+		DatagramPacket findBroadcast = new DatagramPacket(probeData, probeData.length, broadcastTarget, 1218);		
 		sock.send(findBroadcast);		
 	}
 	
 	public void run()
 	{
+
+		try {
+			sendProbe();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
 		while ( true )
 		{
 			byte[] buf = new byte[1];
 			DatagramPacket findBroadcast = new DatagramPacket(buf, buf.length);
 			try {
 				sock.receive(findBroadcast);
+				System.out.println("Got packet");
 				InetAddress recvFrom = findBroadcast.getAddress();
+
+				System.out.println("Address: "+recvFrom.getHostAddress());
+				if ( !recvFrom.equals(myAddress) )
+				{
+					Iterator<InetAddress> it = clientList.iterator();
+					boolean exists = false;
+					while ( it.hasNext() )
+					{
+						InetAddress addr = it.next();
+						if ( addr.getHostAddress().equals(recvFrom.getHostAddress()) )
+						{
+							exists = true;
+							break;
+						}
+					}
+					
+					if ( !exists )
+					{
+						sendProbe();
+						clientList.add(recvFrom);
+					}
+				}
+				else
+					System.out.println("Ignored packet from self");
+				
 				Iterator<InetAddress> it = clientList.iterator();
+				
+				System.out.println("Host list:");
 				while ( it.hasNext() )
 				{
 					InetAddress addr = it.next();
-					if ( !addr.getHostAddress().equals(recvFrom.getHostAddress()) )
-					{
-						clientList.add(addr);
-						break;
-					}
+					System.out.println(addr.getHostAddress());
 				}
-				sendProbe();
+				System.out.println("**********");
 				
 				Thread.sleep(500);
 			} catch (Exception e) {
@@ -70,20 +131,8 @@ public class ClientFinder extends Thread {
 		return clientList;
 	}
 	
-	public static void main(String[] args) throws InterruptedException {
-		ClientFinder f = new ClientFinder();
-		System.out.println("Finding clients...");
-		
-		while ( f.getClients().size() == 0 ) Thread.sleep(100);
-		
-		Vector<InetAddress> clients = f.getClients();
-		Iterator<InetAddress> it = clients.iterator();
-		
-		while ( it.hasNext() )
-		{
-			System.out.println(it.next().getHostAddress());
-		}
-		
+	public static void main(String[] args) throws InterruptedException, SocketException {
+		new ClientFinder();
 	}
 
 }
