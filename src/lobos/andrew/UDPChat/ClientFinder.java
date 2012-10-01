@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
+
+import lobos.andrew.UDPChat.ClientList.ClientListUI;
 import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelectorReceiver;
 
 
@@ -61,7 +63,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	
 	public void run()
 	{
-
+		ClientListUI clientListUI = new ClientListUI(UDPChat.getInstance());
 		try {
 			sendProbe();
 		} catch (IOException e1) {
@@ -81,7 +83,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 				System.out.println("Got packet");
 				InetAddress recvFrom = findBroadcast.getAddress();
 
-				System.out.println("Address: "+recvFrom.getHostAddress());
+				System.out.println("Address: "+recvFrom.getHostAddress()+" Username: "+username);
 				if ( !recvFrom.equals(myAddress) )
 				{
 					Iterator<DiscoveredClient> it = clientList.iterator();
@@ -99,6 +101,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 					if ( !exists )
 					{
 						sendProbe();
+						clientListUI.addClientToList(new DiscoveredClient(username, recvFrom));
 						clientList.add(new DiscoveredClient(username, recvFrom));
 					}
 				}
