@@ -21,8 +21,20 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	private InetAddress myAddress;
 	private InetAddress broadcastTarget;
 	ButtonGroup options = new ButtonGroup();
+	private static ClientFinder instance = null;
 	
-	public ClientFinder(String username, String interfaceName)
+	public static ClientFinder getInstance()
+	{
+		return instance;
+	}
+	
+	public static void init(String username, String interfaceName)
+	{
+		instance = new ClientFinder(username, interfaceName);
+	}
+	
+	
+	private ClientFinder(String username, String interfaceName)
 	{
 		probeData = username.getBytes();
 		selectInterface(interfaceName);
@@ -122,6 +134,30 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	public Vector<DiscoveredClient> getClients()
 	{
 		return clientList;
+	}
+	
+	public DiscoveredClient getClientForIP(String IP)
+	{
+		Iterator<DiscoveredClient> it = getClients().iterator();
+		while ( it.hasNext() )
+		{
+			DiscoveredClient thisClient = it.next();
+			if ( thisClient.getAddress().getHostAddress().equals(IP) )
+				return thisClient;
+		}
+		return null;
+	}
+	
+	public DiscoveredClient getClientForUsername(String username)
+	{
+		Iterator<DiscoveredClient> it = getClients().iterator();
+		while ( it.hasNext() )
+		{
+			DiscoveredClient thisClient = it.next();
+			if ( thisClient.getUsername().equals(username) )
+				return thisClient;
+		}
+		return null;
 	}
 
 }

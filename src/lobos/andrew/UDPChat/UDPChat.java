@@ -32,8 +32,9 @@ public class UDPChat implements UsernameSelectorReceiver,InterfaceSelectorReceiv
 	@Override
 	public void getUsernameFromUI(String username) {
 		this.username = username;
-		new ClientFinder(username, interfaceName);
+		ClientFinder.init(username, interfaceName);
 	}
+	
 	
 	public static void main(String[] args) throws SocketException {
 		instance = new UDPChat();
