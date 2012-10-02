@@ -23,7 +23,7 @@ public class IncomingListener extends Thread {
 		{
 			try {
 				sock.accept();
-				System.out.println("Connection Recv");
+				
 			} catch (IOException e) {
 				System.exit(0);
 				return;

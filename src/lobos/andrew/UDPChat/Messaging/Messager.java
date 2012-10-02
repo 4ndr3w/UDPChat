@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import lobos.andrew.UDPChat.ClientFinder;
 import lobos.andrew.UDPChat.Config;
 import lobos.andrew.UDPChat.DiscoveredClient;
 
@@ -23,6 +24,15 @@ public class Messager extends Thread {
 		this.target = target;
 		this.handler = handler;
 		connection = new Socket(target.getAddress(), Config.CHATPORT);
+		reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+		handler.connectionSuccessful();
+	}
+	
+	public Messager(Socket source, MessageHandler handler) throws IOException
+	{
+		connection = source;
+		target = ClientFinder.getInstance().getClientForIP(source.getInetAddress().getHostAddress());
 		reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 		handler.connectionSuccessful();
