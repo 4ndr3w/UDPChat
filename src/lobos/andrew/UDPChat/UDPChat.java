@@ -1,6 +1,7 @@
 package lobos.andrew.UDPChat;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.SocketException;
 
 import lobos.andrew.UDPChat.ClientList.ClientListSelectorReceiver;
@@ -47,6 +48,16 @@ public class UDPChat implements UsernameSelectorReceiver,InterfaceSelectorReceiv
 
 	@Override
 	public void connectToClient(DiscoveredClient client) {
+		try {
+			new ChatGUI(client);
+		} catch (IOException e) {
+			System.out.println("Failed to connect!");
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void handleNewConnection(Socket client) {
 		try {
 			new ChatGUI(client);
 		} catch (IOException e) {

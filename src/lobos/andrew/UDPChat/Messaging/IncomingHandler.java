@@ -1,5 +1,7 @@
 package lobos.andrew.UDPChat.Messaging;
 
-public interface IncomingHandler {
+import java.net.Socket;
 
+public interface IncomingHandler {
+	public void handleNewConnection(Socket client);
 }

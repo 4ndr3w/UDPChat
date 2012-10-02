@@ -2,13 +2,16 @@ package lobos.andrew.UDPChat.Messaging;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 import lobos.andrew.UDPChat.Config;
 
 public class IncomingListener extends Thread {
 	ServerSocket sock;
-	public IncomingListener(IncomingHandler callback)
+	IncomingHandler handler;
+	public IncomingListener(IncomingHandler handler)
 	{
+		this.handler = handler;
 		try {
 			sock = new ServerSocket(Config.CHATPORT);
 		} catch (IOException e) {
@@ -22,8 +25,8 @@ public class IncomingListener extends Thread {
 		while ( true )
 		{
 			try {
-				sock.accept();
-				
+				Socket newClient = sock.accept();
+				handler.handleNewConnection(newClient);
 			} catch (IOException e) {
 				System.exit(0);
 				return;

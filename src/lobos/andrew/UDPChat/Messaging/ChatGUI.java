@@ -81,6 +81,7 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener {
 
 	@Override
 	public void receiveMessage(String msg) {
+		System.out.println("Got msg: "+msg);
 		messagelog.append(messanger.getPeerUsername()+": "+msg+"\n");
 	}
 

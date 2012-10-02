@@ -17,7 +17,7 @@ public class Messager extends Thread {
 	Socket connection;
 	
 	BufferedReader reader;
-	BufferedWriter writer;
+	OutputStreamWriter writer;
 	
 	public Messager(DiscoveredClient target, MessageHandler handler) throws IOException
 	{
@@ -25,21 +25,25 @@ public class Messager extends Thread {
 		this.handler = handler;
 		connection = new Socket(target.getAddress(), Config.CHATPORT);
 		reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+		writer = new OutputStreamWriter(connection.getOutputStream());
 		handler.connectionSuccessful();
+		start();
 	}
 	
 	public Messager(Socket source, MessageHandler handler) throws IOException
 	{
+		this.handler = handler;
 		connection = source;
 		target = ClientFinder.getInstance().getClientForIP(source.getInetAddress().getHostAddress());
 		reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+		writer = new OutputStreamWriter(connection.getOutputStream());
 		handler.connectionSuccessful();
+		start();
 	}
 	
 	public void sendMessage(String msg)
 	{
+		System.out.println("SendMsg "+msg);
 		try {
 			writer.write(msg);
 			writer.flush();
