@@ -1,14 +1,18 @@
 package lobos.andrew.UDPChat;
 
+import java.io.IOException;
 import java.net.SocketException;
 
 import lobos.andrew.UDPChat.ClientList.ClientListSelectorReceiver;
 import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelector;
 import lobos.andrew.UDPChat.InterfaceSelect.InterfaceSelectorReceiver;
+import lobos.andrew.UDPChat.Messaging.ChatGUI;
+import lobos.andrew.UDPChat.Messaging.IncomingHandler;
+import lobos.andrew.UDPChat.Messaging.IncomingListener;
 import lobos.andrew.UDPChat.UsernameSelect.UsernameSelector;
 import lobos.andrew.UDPChat.UsernameSelect.UsernameSelectorReceiver;
 
-public class UDPChat implements UsernameSelectorReceiver,InterfaceSelectorReceiver,ClientListSelectorReceiver {
+public class UDPChat implements UsernameSelectorReceiver,InterfaceSelectorReceiver,ClientListSelectorReceiver,IncomingHandler {
 	String interfaceName;
 	String username;
 	private static UDPChat instance = null;
@@ -21,6 +25,7 @@ public class UDPChat implements UsernameSelectorReceiver,InterfaceSelectorReceiv
 	public UDPChat() throws SocketException
 	{
 		new InterfaceSelector(this);
+		new IncomingListener(this);
 	}
 	
 	@Override
@@ -42,8 +47,12 @@ public class UDPChat implements UsernameSelectorReceiver,InterfaceSelectorReceiv
 
 	@Override
 	public void connectToClient(DiscoveredClient client) {
-		System.out.println("Selected: "+client.getUsername()+" at "+client.getAddress().getHostAddress());
-		
+		try {
+			new ChatGUI(client);
+		} catch (IOException e) {
+			System.out.println("Failed to connect!");
+			e.printStackTrace();
+		}
 	}
 
 }

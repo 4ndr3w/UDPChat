@@ -57,7 +57,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 					}
 				}
 			}
-			sock = new MulticastSocket(1218);
+			sock = new MulticastSocket(Config.DISCOVERPORT);
 			start();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,7 +69,7 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	
 	public void sendProbe() throws IOException
 	{
-		DatagramPacket findBroadcast = new DatagramPacket(probeData, probeData.length, broadcastTarget, 1218);		
+		DatagramPacket findBroadcast = new DatagramPacket(probeData, probeData.length, broadcastTarget, Config.DISCOVERPORT);		
 		sock.send(findBroadcast);		
 	}
 	
