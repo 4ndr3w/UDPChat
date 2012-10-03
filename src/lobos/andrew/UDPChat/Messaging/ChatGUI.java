@@ -87,7 +87,9 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		messanger.sendMessage(messageToSend.getText());
+		String data = messageToSend.getText();
+		messagelog.append(messanger.getMyUsername()+": "+data+"\n");
+		messanger.sendMessage(data);
 		messageToSend.setText("");
 	}
 

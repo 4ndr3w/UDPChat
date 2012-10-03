@@ -1,7 +1,6 @@
 package lobos.andrew.UDPChat.Messaging;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -45,7 +44,7 @@ public class Messager extends Thread {
 	{
 		System.out.println("SendMsg "+msg);
 		try {
-			writer.write(msg);
+			writer.write(msg+"\n");
 			writer.flush();
 		} catch (IOException e) {
 			System.out.println("Message send failed");
@@ -57,6 +56,11 @@ public class Messager extends Thread {
 	public String getPeerUsername()
 	{
 		return target.getUsername();
+	}
+	
+	public String getMyUsername()
+	{
+		return ClientFinder.getInstance().getUsername();
 	}
 	
 	public void run()

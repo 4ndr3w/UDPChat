@@ -8,7 +8,7 @@ public class DiscoveredClient {
 	
 	public DiscoveredClient(String username, InetAddress address)
 	{
-		this.username = username;
+		this.username = username.trim();
 		this.address = address;
 	}
 	

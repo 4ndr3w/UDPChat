@@ -40,6 +40,11 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 		selectInterface(interfaceName);
 	}
 	
+	public String getUsername()
+	{
+		return new String(probeData).trim();
+	}
+	
 
 	@Override
 	public void selectInterface(String interfaceName) {
