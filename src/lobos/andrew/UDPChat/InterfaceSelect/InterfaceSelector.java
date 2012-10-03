@@ -22,6 +22,8 @@ public class InterfaceSelector extends JFrame implements ActionListener
 	
 	public InterfaceSelector(InterfaceSelectorReceiver callbackHandler) throws SocketException
 	{
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		this.callbackHandler = callbackHandler;
 		
 		ButtonGroup buttons = new ButtonGroup();

@@ -24,6 +24,8 @@ public class ClientListUI extends JFrame implements ActionListener {
 	ClientListSelectorReceiver callback = null;
 	public ClientListUI(ClientListSelectorReceiver callback)
 	{
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		this.callback = callback;
 		setLayout(new GridLayout(0,1));
 		clientList.setLayout(new GridLayout(0,1));

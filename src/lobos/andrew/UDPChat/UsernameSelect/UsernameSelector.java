@@ -19,6 +19,8 @@ public class UsernameSelector extends JFrame {
 	
 	public UsernameSelector(UsernameSelectorReceiver _callback)
 	{
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		callback = _callback;
 		setLayout(new GridLayout(2,1));
 		
