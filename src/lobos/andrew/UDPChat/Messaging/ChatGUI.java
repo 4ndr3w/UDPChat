@@ -64,7 +64,7 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener,Win
 		JPanel sendBox = new JPanel();
 		sendBox.setLayout(new GridLayout(1,2));
 		sendBox.add(messageToSend);
-		//okButton.setEnabled(false);
+
 		okButton.addActionListener(this);
 		sendBox.add(okButton);
 		
@@ -90,6 +90,8 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener,Win
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String data = messageToSend.getText();
+		if ( data.isEmpty() )
+			return;
 		messagelog.append(messanger.getMyUsername()+": "+data+"\n");
 		messanger.sendMessage(data);
 		messageToSend.setText("");
