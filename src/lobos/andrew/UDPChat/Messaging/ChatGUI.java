@@ -118,7 +118,9 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener,Win
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		// TODO Auto-generated method stub
+		messanger.close();
+		
+		dispose();
 		
 	}
 

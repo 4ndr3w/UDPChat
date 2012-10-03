@@ -65,8 +65,6 @@ public class Messager extends Thread {
 	public void close()
 	{	
 		try {
-			reader.close();
-			writer.close();
 			connection.close();
 		} catch (IOException e) {
 		}
@@ -82,9 +80,7 @@ public class Messager extends Thread {
 				handler.receiveMessage(input);
 			}
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (IOException e) {}
 		handler.connectionClosed();
 	}
 }
