@@ -97,10 +97,8 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 				sock.receive(findBroadcast);
 				
 				String username = new String(buf);
-				System.out.println("Got packet");
 				InetAddress recvFrom = findBroadcast.getAddress();
 
-				System.out.println("Address: "+recvFrom.getHostAddress()+" Username: "+username);
 				if ( !recvFrom.equals(myAddress) )
 				{
 					Iterator<DiscoveredClient> it = clientList.iterator();
@@ -122,8 +120,6 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 						clientList.add(new DiscoveredClient(username, recvFrom));
 					}
 				}
-				else
-					System.out.println("Ignored packet from self");
 				Thread.sleep(500);
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -80,12 +80,10 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener,Win
 		messagelog.append("Connected!\n");
 		messageToSend.setText("");
 		messageToSend.setEditable(true);
-		System.out.println("Connection successful!");
 	}
 
 	@Override
 	public void receiveMessage(String msg) {
-		System.out.println("Got msg: "+msg);
 		messagelog.append(messanger.getPeerUsername()+": "+msg+"\n");
 	}
 
