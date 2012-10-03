@@ -42,7 +42,9 @@ public class Messager extends Thread {
 	
 	public void sendMessage(String msg)
 	{
-		System.out.println("SendMsg "+msg);
+		if ( msg.isEmpty() )
+			return;
+		
 		try {
 			writer.write(msg+"\n");
 			writer.flush();
