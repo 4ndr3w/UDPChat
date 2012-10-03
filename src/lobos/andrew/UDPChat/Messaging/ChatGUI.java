@@ -40,7 +40,6 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener,Win
 		JPanel sendBox = new JPanel();
 		sendBox.setLayout(new GridLayout(1,2));
 		sendBox.add(messageToSend);
-		//okButton.setEnabled(false);
 		okButton.addActionListener(this);
 		sendBox.add(okButton);
 		
