@@ -63,6 +63,17 @@ public class Messager extends Thread {
 		return ClientFinder.getInstance().getUsername();
 	}
 	
+	public void close()
+	{	
+		try {
+			reader.close();
+			writer.close();
+			connection.close();
+		} catch (IOException e) {
+		}
+		
+	}
+	
 	public void run()
 	{
 		String input;

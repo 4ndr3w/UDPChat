@@ -3,6 +3,8 @@ package lobos.andrew.UDPChat.Messaging;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -13,7 +15,7 @@ import javax.swing.JTextArea;
 
 import lobos.andrew.UDPChat.DiscoveredClient;
 
-public class ChatGUI extends JFrame implements MessageHandler,ActionListener {
+public class ChatGUI extends JFrame implements MessageHandler,ActionListener,WindowListener {
 	/**
 	 * 
 	 */
@@ -26,6 +28,8 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener {
 	// Constructor for connecting to another client
 	public ChatGUI(DiscoveredClient target) throws IOException
 	{
+		addWindowListener(this);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		messageToSend.setText("Waiting for connection...");
 		messageToSend.setEditable(false);
 		setLayout(new GridLayout(2,1));
@@ -98,5 +102,47 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener {
 		messageToSend.setEditable(false);
 		okButton.setEnabled(false);
 		messagelog.append("Connection Closed\n");
+	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent arg0) {
+		messanger.close();
+		dispose();
+	}
+
+	@Override
+	public void windowClosing(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
