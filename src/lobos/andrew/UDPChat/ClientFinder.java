@@ -4,6 +4,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -20,7 +21,9 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	private Vector<DiscoveredClient> clientList = new Vector<DiscoveredClient>();
 	private InetAddress myAddress;
 	private InetAddress broadcastTarget;
+	private Object threadLock = new Object();
 	ButtonGroup options = new ButtonGroup();
+	ClientListUI clientListUI;
 	private static ClientFinder instance = null;
 	
 	public static ClientFinder getInstance()
@@ -80,13 +83,63 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	
 	public void run()
 	{
-		ClientListUI clientListUI = new ClientListUI(UDPChat.getInstance());
-		try {
-			sendProbe();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		clientListUI = new ClientListUI(UDPChat.getInstance());
+		
+		new Thread()
+		{
+			public void run()
+			{
+				while ( true )
+				{
+					try {
+						sendProbe();
+						Thread.sleep(5000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+		
+		new Thread()
+		{
+			public void run()
+			{
+				while ( true )
+				{
+					
+					try {
+						ArrayList<DiscoveredClient> toRemove = new ArrayList<DiscoveredClient>();
+						synchronized(threadLock)
+						{
+							Iterator<DiscoveredClient> it = clientList.iterator();
+							while ( it.hasNext() )
+							{
+	
+									DiscoveredClient thisClient = it.next();
+									if ( thisClient.isExpired() )
+									{
+											System.out.println(thisClient.getUsername());
+											toRemove.add(thisClient);
+									}
+							}
+						}
+						Iterator<DiscoveredClient> it = toRemove.iterator();
+						while ( it.hasNext() )
+						{
+							DiscoveredClient thisClient = it.next();
+							clientListUI.removeClientFromList(thisClient);
+							clientList.remove(thisClient);
+						}
+						
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+
 
 		
 		while ( true )
@@ -101,23 +154,27 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 
 				if ( !recvFrom.equals(myAddress) )
 				{
-					Iterator<DiscoveredClient> it = clientList.iterator();
-					boolean exists = false;
-					while ( it.hasNext() )
+					synchronized(threadLock)
 					{
-						InetAddress addr = it.next().getAddress();
-						if ( addr.getHostAddress().equals(recvFrom.getHostAddress()) )
+						Iterator<DiscoveredClient> it = clientList.iterator();
+						boolean exists = false;
+						while ( it.hasNext() )
 						{
-							exists = true;
-							break;
+	
+								DiscoveredClient thisClient = it.next();
+								InetAddress addr = thisClient.getAddress();
+								if ( addr.getHostAddress().equals(recvFrom.getHostAddress()) )
+								{
+									exists = true;
+									thisClient.renew();
+								}
 						}
-					}
 					
-					if ( !exists )
-					{
-						sendProbe();
-						clientListUI.addClientToList(new DiscoveredClient(username, recvFrom));
-						clientList.add(new DiscoveredClient(username, recvFrom));
+						if ( !exists )
+						{
+								clientListUI.addClientToList(new DiscoveredClient(username, recvFrom));
+								clientList.add(new DiscoveredClient(username, recvFrom));
+						}
 					}
 				}
 				Thread.sleep(500);
@@ -139,24 +196,30 @@ public class ClientFinder extends Thread implements InterfaceSelectorReceiver
 	
 	public DiscoveredClient getClientForIP(String IP)
 	{
-		Iterator<DiscoveredClient> it = getClients().iterator();
-		while ( it.hasNext() )
+		synchronized(threadLock)
 		{
-			DiscoveredClient thisClient = it.next();
-			if ( thisClient.getAddress().getHostAddress().equals(IP) )
-				return thisClient;
+			Iterator<DiscoveredClient> it = getClients().iterator();
+			while ( it.hasNext() )
+			{
+				DiscoveredClient thisClient = it.next();
+				if ( thisClient.getAddress().getHostAddress().equals(IP) )
+					return thisClient;
+			}
 		}
 		return null;
 	}
 	
 	public DiscoveredClient getClientForUsername(String username)
 	{
-		Iterator<DiscoveredClient> it = getClients().iterator();
-		while ( it.hasNext() )
+		synchronized(threadLock)
 		{
-			DiscoveredClient thisClient = it.next();
-			if ( thisClient.getUsername().equals(username) )
-				return thisClient;
+			Iterator<DiscoveredClient> it = getClients().iterator();
+			while ( it.hasNext() )
+			{
+				DiscoveredClient thisClient = it.next();
+				if ( thisClient.getUsername().equals(username) )
+					return thisClient;
+			}
 		}
 		return null;
 	}

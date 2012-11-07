@@ -33,7 +33,6 @@ public class ChatGUI extends JFrame implements MessageHandler,ActionListener,Win
 		messageToSend.setText("Waiting for connection...");
 		messageToSend.setEditable(false);
 		setLayout(new GridLayout(2,1));
-		
 		messanger = new Messager(target, this);
 		messagelog.setEditable(false);
 		

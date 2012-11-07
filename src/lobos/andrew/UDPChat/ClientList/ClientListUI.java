@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.Map.Entry;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -52,6 +52,22 @@ public class ClientListUI extends JFrame implements ActionListener {
 		clientList.add(button);
 		clientList.setVisible(true);
 		buttonList.put(button, client);
+	}
+	
+	public void removeClientFromList(DiscoveredClient client)
+	{
+		Iterator<Entry<JRadioButton, DiscoveredClient>> it = buttonList.entrySet().iterator();
+		while ( it.hasNext() )
+		{
+			Entry<JRadioButton, DiscoveredClient> thisClient = it.next();
+			if ( thisClient.getValue().getUsername().equals(client.getUsername()) )
+			{
+				clients.remove(thisClient.getValue().getUsername());
+				buttonList.remove(thisClient.getKey());
+				clientList.remove(thisClient.getKey());
+				repaint();
+			}
+		}
 	}
 
 	@Override

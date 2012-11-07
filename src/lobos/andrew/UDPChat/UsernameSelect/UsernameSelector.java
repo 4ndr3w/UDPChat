@@ -35,7 +35,6 @@ public class UsernameSelector extends JFrame {
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(new ActionListener()
 		{
-
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				String name = username.getText();
